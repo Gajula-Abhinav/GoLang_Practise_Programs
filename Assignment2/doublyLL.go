@@ -2,67 +2,96 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
 )
 
-type Node struct {
-	num  int
-	prev *Node
-	next *Node
+type node struct {
+	value int
+	prev  *node
+	next  *node
 }
 
-type List struct {
-	tail  *Node
-	start *Node
-}
+var head *node = nil
 
-func main() {
-	items := &List{}
-	size := 10
-	//rand_number := make([]int, size, size)
-	for i := 0; i < size; i++ {
-		node := Node{num: rand.Intn(100)}
-		if node.num == 0 {
-			i = i - 1
-			continue
-
-		}
-		items.insertNode(&node)
-		fmt.Printf("%v and number is %v\n", i, node.num)
-	}
-	items.Display()
-	items.DisplayReverse()
-}
-
-func (l *List) Display() {
-	list := l.start
-	for list != nil {
-		fmt.Printf("value = %v and prev = %v and next= %v\n", list.num, list.prev, list.next)
-		list = list.next
-	}
-	fmt.Println()
-}
-
-func (l *List) DisplayReverse() {
-	list := l.tail
-	for list != nil {
-		fmt.Printf("value = %v\n", list.num)
-		list = list.prev
-	}
-	fmt.Println()
-}
-
-func (l *List) insertNode(newNode *Node) {
-	if l.start == nil {
-		l.start = newNode
-		l.tail = newNode
+func (list *node) pushBack(value int) *node {
+	if head == nil {
+		list.value = value
+		list.next = nil
+		list.prev = nil
+		head = list
+		return list
 	} else {
-		currentNode := l.start
-		for currentNode.next != nil {
-			currentNode = currentNode.next
+		for list.next != nil {
+			if list.value == value {
+				return list
+			}
+			list = list.next
 		}
-		newNode.prev = currentNode
-		currentNode.next = newNode
-		l.tail = newNode
+		list.next = new(node)
+		list.next.value = value
+		list.next.prev = list
+		list.next.next = nil
+		return list
 	}
+}
+func (list *node) pushFront(value int) *node {
+	if head == nil {
+		list.value = value
+		list.next = nil
+		list.prev = nil
+		head = list
+		return list
+	} else {
+		tmp := new(node)
+		tmp.next = list
+		tmp.prev = nil
+		tmp.value = value
+		head = tmp
+		return tmp
+	}
+}
+func (list *node) popFront() *node {
+	if head != nil {
+		tmp := new(node)
+		tmp = head.next
+		tmp.prev = nil
+		head = tmp
+		return list
+	}
+	return list
+}
+func (list *node) popBack() *node {
+	if head == nil {
+		return list
+	}
+	tmp := new(node)
+	tmp = list
+	for tmp.next.next != nil {
+		tmp = tmp.next
+	}
+	tmp.next = nil
+	return list
+}
+func (list *node) printElements() {
+	for head.next != nil {
+		fmt.Println("Yes")
+		fmt.Println(head.value)
+		head = head.next
+	}
+	fmt.Println(head.value)
+}
+func main() {
+	listval := new(node)
+	listval.pushBack(22)
+	listval.pushBack(12)
+	listval.pushFront(1)
+	listval.popFront()
+	listval.popBack()
+	dup := head
+	for dup != nil {
+		fmt.Printf(" Current element val : %d ", dup.value)
+		fmt.Printf("Prev element val : %d ", dup.prev)
+		fmt.Printf("Next element val : %d ", dup.next)
+		dup = dup.next
+	}
+	fmt.Println("Value :", head)
 }
